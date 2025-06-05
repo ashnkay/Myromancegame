@@ -1,374 +1,79 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Enchanted Bonds - Interactive Story</title>
-<style>
-  body {
-    background: #1a1a2e;
-    color: #e0d4f7;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    max-width: 700px;
-    margin: 2rem auto;
-    padding: 1rem;
-    line-height: 1.5;
-  }
-  h1, h2 {
-    text-align: center;
-    color: #c2a7e0;
-  }
-  button {
-    background: #6a5acd;
-    border: none;
-    border-radius: 6px;
-    color: white;
-    padding: 12px 20px;
-    margin: 8px 0;
-    width: 100%;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background 0.3s ease;
-  }
-  button:hover {
-    background: #5a47b8;
-  }
-  input, select {
-    width: 100%;
-    padding: 10px;
-    margin: 8px 0;
-    border-radius: 6px;
-    border: none;
-    font-size: 1rem;
-  }
-  #game-container {
-    margin-top: 2rem;
-  }
-  #login-section, #save-section {
-    background: #2c2c54;
-    padding: 1rem;
-    border-radius: 8px;
-    margin-bottom: 1rem;
-  }
-  #save-section button {
-    width: auto;
-    margin-right: 10px;
-  }
-  .choice-btn {
-    display: block;
-    margin: 6px 0;
-    padding: 12px;
-    background: #8a79e6;
-    border-radius: 6px;
-    border: none;
-    color: white;
-    font-size: 1rem;
-    cursor: pointer;
-  }
-  .choice-btn:hover {
-    background: #6f5cd1;
-  }
-  #login-message, #save-message {
-    font-weight: bold;
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Enchanted Bonds - No Login</title>
+  <style>
+    body {
+      background: #1a1a2e;
+      color: #eee;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 600px;
+      margin: 2rem auto;
+      padding: 1rem;
+    }
+    button {
+      background: #4a90e2;
+      border: none;
+      padding: 0.5rem 1rem;
+      margin: 0.3rem;
+      color: white;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    button:hover {
+      background: #357ABD;
+    }
+    #game-container {
+      margin-top: 1.5rem;
+      white-space: pre-line;
+    }
+    .choice-btn {
+      display: block;
+      margin: 0.5rem 0;
+      width: 100%;
+      max-width: 300px;
+    }
   </style>
 </head>
 <body>
+  <h1>Enchanted Bonds</h1>
+  <div id="game-container"></div>
 
-<h1>Enchanted Bonds</h1>
+  <script>
+    (() => {
+      let playerName = 'Kayla';
+      let playerPronouns = { subject: 'they', object: 'them', possessive: 'their' };
+      let interestGender = 'guardian';
+      let currentSceneKey = 'start';
 
-<div id="login-section">
-  <h2>Login / Create Account</h2>
-  <input type="text" id="username-input" placeholder="Enter username" autocomplete="off" />
-  <button id="login-btn">Login</button>
-  <p id="login-message" style="color: #f88; margin-top: 0.5rem;"></p>
-</div>
-
-<div id="save-section" style="display:none;">
-  <h2>Save Slots</h2>
-  <button data-slot="1">Save Slot 1</button>
-  <button data-slot="2">Save Slot 2</button>
-  <button data-slot="3">Save Slot 3</button>
-  <button id="load-btn">Load Last Save</button>
-  <button id="clear-saves-btn" style="background:#b54;">Clear All Saves</button>
-  <p id="save-message" style="color: #f88; margin-top: 0.5rem;"></p>
-</div>
-
-<div id="game-container"></div>
-
-<script>
-(() => {
-  let username = null;
-  let playerName = '';
-  let playerPronouns = { subject: 'they', object: 'them', possessive: 'their' };
-  let interestGender = 'guardian';
-  let currentSceneKey = 'setupName';
-
-  const pronounsSets = {
-    they: { subject: 'they', object: 'them', possessive: 'their' },
-    she: { subject: 'she', object: 'her', possessive: 'her' },
-    he: { subject: 'he', object: 'him', possessive: 'his' }
-  };
-
-  // Capitalize first letter helper
-  const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
-
-  // Elements
-  const loginSection = document.getElementById('login-section');
-  const saveSection = document.getElementById('save-section');
-  const gameContainer = document.getElementById('game-container');
-  const loginMessage = document.getElementById('login-message');
-  const saveMessage = document.getElementById('save-message');
-
-  // Login
-  function handleLogin() {
-    const input = document.getElementById('username-input');
-    const name = input.value.trim();
-    if (!name) {
-      loginMessage.textContent = 'Please enter a username.';
-      return;
-    }
-    username = name;
-    loginSection.style.display = 'none';
-    saveSection.style.display = 'block';
-    loginMessage.textContent = '';
-    loadGame();
-    renderScene(currentSceneKey);
-  }
-
-  document.getElementById('login-btn').addEventListener('click', handleLogin);
-
-  // Save/Load
-  function saveGame(slot) {
-    if (!username) return;
-    const saveData = {
-      scene: currentSceneKey,
-      name: playerName,
-      pronouns: playerPronouns,
-      interest: interestGender
-    };
-    localStorage.setItem(`${username}_save${slot}`, JSON.stringify(saveData));
-    saveMessage.textContent = `Game saved to Slot ${slot}`;
-    setTimeout(() => saveMessage.textContent = '', 3000);
-  }
-
-  function loadGame() {
-    if (!username) return;
-    for (let i = 1; i <= 3; i++) {
-      const saved = localStorage.getItem(`${username}_save${i}`);
-      if (saved) {
-        const data = JSON.parse(saved);
-        currentSceneKey = data.scene || 'setupName';
-        playerName = data.name || '';
-        playerPronouns = data.pronouns || pronounsSets['they'];
-        interestGender = data.interest || 'guardian';
-        return;
-      }
-    }
-  }
-
-  function clearSaves() {
-    if (!username) return;
-    for (let i = 1; i <= 3; i++) {
-      localStorage.removeItem(`${username}_save${i}`);
-    }
-    saveMessage.textContent = 'All save slots cleared.';
-    setTimeout(() => saveMessage.textContent = '', 3000);
-  }
-
-  document.querySelectorAll('#save-section button[data-slot]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const slot = btn.getAttribute('data-slot');
-      saveGame(slot);
-    });
-  });
-
-  document.getElementById('load-btn').addEventListener('click', () => {
-    loadGame();
-    renderScene(currentSceneKey);
-  });
-
-  document.getElementById('clear-saves-btn').addEventListener('click', () => {
-    clearSaves();
-  });
-
-})();
-
-  // Scenes object holding all story parts
-  const scenes = {
-    // Setup scenes
-    setupName: {
-      text: `Before we begin, what is your name?`,
-      input: true,
-      next: 'setupPronouns'
-    },
-    setupPronouns: {
-      text: `Choose your pronouns:`,
-      select: [
-        { value: 'they', label: 'They/Them' },
-        { value: 'she', label: 'She/Her' },
-        { value: 'he', label: 'He/Him' }
-      ],
-      next: 'setupInterest'
-    },
-    setupInterest: {
-      text: `Who are you most drawn to?`,
-      select: [
-        { value: 'guardian', label: 'The Guardian (strong, cruel, protective)' },
-        { value: 'sorcerer', label: 'The Sorcerer (cold, brilliant, dangerous)' },
-        { value: 'both', label: 'Both — I want them all' }
-      ],
-      next: 'start'
-    }
-  };
-
-  // Add main story and spicy scenes
-  Object.assign(scenes, {
-    start: {
-      text: () => 
-        `Welcome, ${cap(playerName)}. You’ve always felt a pull toward something more—something dangerous and thrilling. ` +
-        `Tonight, your life changes forever. Will you seek the fierce Guardian, the enigmatic Sorcerer, or dare to embrace them both?`,
-      choices: [
-        { text: "Seek the Guardian", next: "guardian_intro" },
-        { text: "Seek the Sorcerer", next: "sorcerer_intro" },
-        { text: "Embrace Both", next: "both_intro" }
-      ]
-    },
-    guardian_intro: {
-      text: () => 
-        `The Guardian stands tall and imposing, eyes sharp as they watch your every move. ` +
-        `Their presence alone makes your ${playerPronouns.possessive} heart race. "You’ve come far, ${playerName}," ` +
-        `they say, voice low and commanding.`,
-      choices: [
-        { text: "Step closer to the Guardian", next: "guardian_spicy" },
-        { text: "Hesitate and pull back", next: "guardian_cold" }
-      ]
-    },
-    guardian_spicy: {
-      text: () =>
-        `The Guardian’s hands are rough but gentle as they trace the curve of your jaw, their breath hot against your skin. ` +
-        `They pull you close, and the room seems to disappear. Their lips find yours, demanding and fierce, igniting a fire deep inside.` +
-        `Every touch, every whisper is a promise of danger and delight.`,
-      choices: [
-        { text: "Melt into their embrace", next: "guardian_heat_up" },
-        { text: "Pull back, overwhelmed", next: "guardian_cold" }
-      ]
-    },
-    guardian_heat_up: {
-      text: () =>
-        `Their hands explore boldly, leaving trails of heat over your body. ` +
-        `You respond eagerly, your senses alive with every flicker of their touch. ` +
-        `Clothes fall away, skin pressing hot against skin, the Guardian’s strength wrapping you in a storm of passion and control. ` +
-        `You are wild and free, lost in the tempest of their desire.`,
-      choices: [
-        { text: "Let go completely", next: "guardian_climax" },
-        { text: "Slow down, catch your breath", next: "guardian_calm_down" }
-      ]
-    },
-    guardian_climax: {
-      text: () =>
-        `The world shatters in a blaze of sensation as you reach your peak, the Guardian’s name a fierce chant on your lips. ` +
-        `You collapse together, bodies slick and breathing heavy, tangled in the afterglow of a fire only they could spark.`,
-      choices: [
-        { text: "Begin anew", next: "start" }
-      ]
-    },
-    guardian_calm_down: {
-      text: () =>
-        `You pull the Guardian close, savoring the slow burn between you. ` +
-        `Words are unnecessary; the silence speaks volumes of trust and connection. ` +
-        `You realize this bond is as much about power as it is tenderness.`,
-      choices: [
-        { text: "Embrace this moment", next: "start" }
-      ]
-    },
-    guardian_cold: {
-      text: () =>
-        `The Guardian's eyes darken, and they take a step back. "Not ready," they growl, their voice thick with disappointment. ` +
-        `You feel the cold distance grow, a reminder that some fires need courage to ignite.`,
-      choices: [
-        { text: "Gather courage and try again", next: "guardian_intro" },
-        { text: "Turn away and choose differently", next: "start" }
-      ]
-    },
-    sorcerer_intro: {
-      text: () =>
-        `The Sorcerer’s gaze pierces through you like ice. Their sharp smile promises secrets and a dangerous game. ` +
-        `"Curious, aren’t you, ${playerName}?" they whisper, voice velvet but edged with steel.`,
-      choices: [
-        { text: "Approach the Sorcerer", next: "sorcerer_spicy" },
-        { text: "Step back cautiously", next: "sorcerer_cold" }
-      ]
-    },
-    sorcerer_spicy: {
-      text: () =>
-        `The Sorcerer’s fingers trace glowing runes on your skin, sparks flying between your bodies. ` +
-        `Their breath is intoxicating as they lean close, words like magic dripping from their lips. ` +
-        `Desire and danger mingle in the air, wrapping you both in a heady spell.`,
-      choices: [
-        { text: "Surrender to the magic", next: "sorcerer_heat_up" },
-        { text: "Resist the spell", next: "sorcerer_cold" }
-      ]
-    },
-    sorcerer_heat_up: {
-      text: () =>
-        `The runes pulse with power as your bodies move together in perfect rhythm. ` +
-        `Every touch leaves a trail of light and pleasure, the Sorcerer’s control both thrilling and overwhelming. ` +
-        `You are lost in the dance of shadow and flame, a world where only the two of you exist.`,
-      choices: [
-        { text: "Dive deeper into the spell", next: "sorcerer_climax" },
-        { text: "Slow the pace, catch your breath", next: "sorcerer_calm_down" }
-      ]
-    },
-    sorcerer_climax: {
-      text: () =>
-        `Magic explodes in a brilliant crescendo as you reach your peak, the Sorcerer’s name a chant in your mind. ` +
-        `You collapse into their arms, breathless and glowing with the afterglow of shared power and passion.`,
-      choices: [
-        { text: "Restart your journey", next: "start" }
-      ]
-    },
-    sorcerer_calm_down: {
-      text: () =>
-        `You pull the Sorcerer close, feeling the warmth beneath their cold exterior. ` +
-        `The tension melts into a quiet connection, a promise of mysteries yet to be unraveled.`,
-      choices: [
-        { text: "Stay in this moment", next: "start" }
-      ]
-    },
-    sorcerer_cold: {
-      text: () =>
-        `The Sorcerer’s eyes narrow, disappointment flashing like lightning. "Too timid," they say, voice sharp as frost. ` +
-        `You feel the chill of rejection, a warning that magic is not for the faint of heart.`,
-      choices: [
-        { text: "Try again with more courage", next: "sorcerer_intro" },
-        { text: "Step away and reconsider", next: "start" }
-      ]
-    },
-    both_intro: {
-      text: () =>
-        `Bold and fearless, you reach for both the Guardian and the Sorcerer. ` +
-        `They exchange a look—equal parts challenge and admiration—as they step forward to claim you together.`,
-      choices: [
-        { text: "Accept their touch", next: "both_spicy" },
-        { text: "Hesitate, unsure of the path", next: "start" }
-      ]
-    },
-    both_spicy: {
-      text: () =>
-        `Their hands and lips explore you in tandem, a symphony of passion and power unlike anything you’ve known. ` +
-        `The Guardian’s strength grounds you while the Sorcerer’s magic lifts you higher. ` +
-        `Together, they weave a spell of desire that leaves you trembling and breathless.`,
-      choices: [
-        { text: "Give in fully", next: "both_climax" },
-        { text: "Slow it down and savor", next: "both_calm_down" }
-      ]
-    },
-    both_climax: {
-  text: () =>
-    `The world blurs into a kaleidoscope of sensation as you reach a shared peak, voices and hearts united. ` +
-    `You collapse together in a tangled heap of skin and soul, a perfect storm of love and power.`,
-  choices: [
-    { text: "Continue your journey", next: "after_climax" }
+      // Your scenes here — example:
+      const scenes = {
+        start: {
+          text: () => `Welcome, ${playerName}. You’ve always felt a pull toward something more—something dangerous and thrilling. Tonight, your life changes forever. Will you seek the fierce Guardian, the enigmatic Sorcerer, or dare to embrace them both?`,
+          choices: [
+            { text: "The Guardian", next: "choose_guardian" },
+            { text: "The Sorcerer", next: "choose_sorcerer" },
+            { text: "Both", next: "choose_both" }
+          ]
+        },
+        choose_both: {
+          text: () => `Bold and fearless, you reach for both the Guardian and the Sorcerer. They exchange a look—equal parts challenge and admiration—as they step forward to claim you together.`,
+          choices: [
+            { text: "Accept their touch", next: "both_touch" }
+          ]
+        },
+        both_touch: {
+          text: () => `Their hands and lips explore you in tandem, a symphony of passion and power unlike anything you’ve known. The Guardian’s strength grounds you while the Sorcerer’s magic lifts you higher. Together, they weave a spell of desire that leaves you trembling and breathless.`,
+          choices: [
+            { text: "Give in fully", next: "both_climax" }
+          ]
+        },
+        both_climax: {
+          text: () => `The world blurs into a kaleidoscope of sensation as you reach a shared peak, voices and hearts united. You collapse together in a tangled heap of skin and soul, a perfect storm of love and power.`,
+          choices: [
+  { text: "Continue your journey", next: "after_climax" }
   ]
 },
 both_calm_down: {
@@ -757,87 +462,43 @@ after_wild_ride: {
 }
 
     // Text display
-    const textElem = document.createElement('p');
-    textElem.textContent = renderText(scene.text);
-    gameContainer.appendChild(textElem);
+    const gameContainer = document.getElementById('game-container');
 
-    // Input for name
-    if (scene.input) {
-      const input = document.createElement('input');
-      input.type = 'text';
-      input.placeholder = 'Type here...';
-      input.autocomplete = 'off';
-      gameContainer.appendChild(input);
-      input.focus();
+      function clearChoices() {
+        const existingChoices = document.querySelectorAll('.choice-btn');
+        existingChoices.forEach(btn => btn.remove());
+      }
 
-      const btn = document.createElement('button');
-      btn.textContent = 'Continue';
-      gameContainer.appendChild(btn);
-
-      btn.addEventListener('click', () => {
-        const val = input.value.trim();
-        if (!val) return alert('Please enter a value.');
-        if (key === 'setupName') {
-          playerName = val;
+      function renderScene(key) {
+        clearChoices();
+        currentSceneKey = key;
+        const scene = scenes[key];
+        if (!scene) {
+          gameContainer.textContent = "Scene not found.";
+          return;
         }
-        renderScene(scene.next);
-      });
 
-      return;
-    }
+        // Display text
+        gameContainer.textContent = scene.text();
 
-    // Select for pronouns or interests
-    if (scene.select) {
-      const select = document.createElement('select');
-      scene.select.forEach(opt => {
-        const option = document.createElement('option');
-        option.value = opt.value;
-        option.textContent = opt.label;
-        select.appendChild(option);
-      });
-      gameContainer.appendChild(select);
-
-      const btn = document.createElement('button');
-      btn.textContent = 'Continue';
-      gameContainer.appendChild(btn);
-
-      btn.addEventListener('click', () => {
-        const val = select.value;
-        if (!val) return alert('Please select an option.');
-        if (key === 'setupPronouns') {
-          playerPronouns = pronounsSets[val];
-          if (!playerPronouns) playerPronouns = pronounsSets['they'];
-        } else if (key === 'setupInterest') {
-          interestGender = val;
+        // Add choices as buttons
+        if (scene.choices && scene.choices.length > 0) {
+          scene.choices.forEach(choice => {
+            const btn = document.createElement('button');
+            btn.classList.add('choice-btn');
+            btn.textContent = choice.text;
+            btn.addEventListener('click', () => {
+              renderScene(choice.next);
+            });
+            gameContainer.appendChild(document.createElement('br'));
+            gameContainer.appendChild(btn);
+          });
         }
-        renderScene(scene.next);
-      });
+      }
 
-      return;
-    }
-
-    // Render choices
-    if (scene.choices && scene.choices.length > 0) {
-      scene.choices.forEach(choice => {
-        const btn = document.createElement('button');
-        btn.classList.add('choice-btn');
-        btn.textContent = choice.text;
-        btn.addEventListener('click', () => {
-          renderScene(choice.next);
-        });
-        gameContainer.appendChild(btn);
-      });
-    } else {
-      // If no choices, show button to restart or a message
-      const btn = document.createElement('button');
-      btn.textContent = 'Restart Story';
-      btn.addEventListener('click', () => renderScene('start'));
-      gameContainer.appendChild(btn);
-    }
-  }
-
-})();
-</script>
-
+      // Start game
+      renderScene(currentSceneKey);
+    })();
+  </script>
 </body>
 </html>
