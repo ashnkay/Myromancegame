@@ -38,8 +38,6 @@
   </style>
 </head>
 <body>
-  <h1>Enchanted Bonds</h1>
-  <div id="game-container"></div>
 <div id="game-container"></div>
 
   <script>
@@ -52,13 +50,13 @@
       // Your scenes here — example:
       const scenes = {
         start: {
-          text: () => `Welcome, ${playerName}. You’ve always felt a pull toward something more—something dangerous and thrilling. Tonight, your life changes forever. Will you seek the fierce Guardian, the enigmatic Sorcerer, or dare to embrace them both?`,
-          choices: [
-            { text: "The Guardian", next: "choose_guardian" },
-            { text: "The Sorcerer", next: "choose_sorcerer" },
-            { text: "Both", next: "choose_both" }
-          ]
-        },
+  text: () => `You stand at the crossroads, heart racing, magic humming in your veins. Who will you turn to tonight?`,
+  choices: [
+    { text: "Find Rafe", next: "rafe_takeover" },
+    { text: "Go to the Guardian", next: "guardian_takeover" },
+    { text: "Seek both of them", next: "choose_both" }
+  ]
+},
         choose_both: {
           text: () => `Bold and fearless, you reach for both the Guardian and the Sorcerer. They exchange a look—equal parts challenge and admiration—as they step forward to claim you together.`,
           choices: [
