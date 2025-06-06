@@ -38,455 +38,106 @@
   </style>
 </head>
 <body>
-<div id="game-container"></div>
+  <div id="game-container"></div>
 
   <script>
-    (() => {
-      let playerName = 'Kayla';
-      let playerPronouns = { subject: 'they', object: 'them', possessive: 'their' };
-      let interestGender = 'guardian';
-      let currentSceneKey = 'start';
+    const gameContainer = document.getElementById('game-container');
+    let currentSceneKey = 'start';
 
-      // Your scenes here — example:
-      const scenes = {
-        start: {
-  text: () => `✨ <strong>Enchanted Bonds</strong> ✨<br><br>You stand at the crossroads, heart racing, magic humming in your veins. Who will you turn to tonight?`,
-  choices: [
-    { text: "Find Rafe", next: "rafe_takeover" },
-    { text: "Go to the Guardian", next: "guardian_takeover" },
-    { text: "Start your journey anew", next: "start" }
-  ]
-}
-        choose_both: {
-          text: () => `Bold and fearless, you reach for both the Guardian and the Sorcerer. They exchange a look—equal parts challenge and admiration—as they step forward to claim you together.`,
-          choices: [
-            { text: "Accept their touch", next: "both_touch" }
-          ]
-        },
-        both_touch: {
-          text: () => `Their hands and lips explore you in tandem, a symphony of passion and power unlike anything you’ve known. The Guardian’s strength grounds you while the Sorcerer’s magic lifts you higher. Together, they weave a spell of desire that leaves you trembling and breathless.`,
-          choices: [
-            { text: "Give in fully", next: "both_climax" }
-          ]
-        },
-        both_climax: {
-          text: () => `The world blurs into a kaleidoscope of sensation as you reach a shared peak, voices and hearts united. You collapse together in a tangled heap of skin and soul, a perfect storm of love and power.`,
-          choices: [
-  { text: "Continue your journey", next: "after_climax" }
-  ]
-},
-both_calm_down: {
-  text: () =>
-    `In the quiet aftermath, the Guardian and Sorcerer hold you close, each offering a different kind of comfort. ` +
-    `You realize this bond is as complex as it is thrilling, a promise of endless possibilities.`,
-  choices: [
-    { text: "Embrace the future", next: "after_climax" }
-  ]
-},
-after_climax: {
-  text: () =>
-    `Refreshed and bonded, you face the dawn with hope and determination. The world feels wide open, filled with possibilities. ` +
-    `Do you venture deeper into the unknown or return to what’s familiar?`,
-  choices: [
-    { text: "Explore the mysterious forest", next: "forest_path" },
-    { text: "Return to the village for answers", next: "village_path" }
-  ]
-},
+    const scenes = {
+      start: {
+        text: () =>
+          `✨ Enchanted Bonds ✨\n\nYou find yourself standing between two shadows — one wild, one watchful. The night breathes heat and hunger.\n\nWho will you give yourself to first?`,
+        choices: [
+          { text: "Find Rafe", next: "rafe_takeover" },
+          { text: "Go to the Guardian", next: "guardian_takeover" },
+          { text: "Start your journey anew", next: "start" }
+        ]
+      },
 
-forest_path: {
-  text: () =>
-    `The forest greets you with whispers and shadows, alive with magic. You feel the pulse of ancient power beneath your feet. ` +
-    `Ahead, the path splits — one route winding toward a glowing glade, the other descending into a foggy hollow.`,
-  choices: [
-    { text: "Head toward the glowing glade", next: "glade_scene" },
-    { text: "Descend into the foggy hollow", next: "hollow_scene" }
-  ]
-},
+      rafe_takeover: {
+        text: () =>
+          `Rafe doesn’t wait for permission. His hands slam down on your hips... “Fuck, Kayla, you’re so fucking wet and tight, just for me.”`,
+        choices: [
+          { text: "Cry out, begging for more", next: "rafe_rough_climax" },
+          { text: "Grab him and pull him deeper", next: "rafe_rough_climax" }
+        ]
+      },
 
-village_path: {
-  text: () =>
-    `The village buzzes with cautious eyes and whispered rumors. Old friends greet you with relief, but secrets linger in the air. ` +
-    `In the town square, you spot the Elder beckoning you over, while the local blacksmith seems eager to talk.`,
-  choices: [
-    { text: "Speak with the Elder", next: "elder_scene" },
-    { text: "Visit the blacksmith", next: "blacksmith_scene" }
-  ]
-},
+      rafe_rough_climax: {
+        text: () =>
+          `Your body trembles, muscles clenching around him... groaning your name like a prayer.`,
+        choices: [
+          { text: "Hold him close", next: "after_wild_ride" },
+          { text: "Whisper dirty promises", next: "rafe_takeover" }
+        ]
+      },
 
-glade_scene: {
-  text: () =>
-    `The glowing glade hums with an otherworldly energy. Strange flowers bloom under the light of an unseen moon. ` +
-    `A figure cloaked in silver steps forward — a guardian of the forest, with eyes that know your soul.`,
-  choices: [
-    { text: "Approach the guardian", next: "guardian_dialogue" },
-    { text: "Stay cautious and observe", next: "observe_guardian" }
-  ]
-},
+      guardian_takeover: {
+        text: () =>
+          `The Guardian isn’t gentle. His hands grip your jaw... “Show me how much you want it.”`,
+        choices: [
+          { text: "Answer with a hungry moan", next: "guardian_rough_climax" },
+          { text: "Bite back, claiming him", next: "guardian_rough_climax" }
+        ]
+      },
 
-hollow_scene: {
-  text: () =>
-    `The fog thickens, swallowing sound and light. You sense something watching, waiting. ` +
-    `Suddenly, a low growl rumbles from the shadows. You can either prepare to defend yourself or try to hide.`,
-  choices: [
-    { text: "Prepare to defend yourself", next: "defend_hollow" },
-    { text: "Try to hide silently", next: "hide_hollow" }
-  ]
-},
+      guardian_rough_climax: {
+        text: () =>
+          `Your body ignites under his brutal touch... “That’s mine. Always.”`,
+        choices: [
+          { text: "Melt into him", next: "after_wild_ride" },
+          { text: "Challenge him with a wicked grin", next: "guardian_takeover" }
+        ]
+      },
 
-elder_scene: {
-  text: () =>
-    `The Elder’s eyes gleam with ancient wisdom as she speaks of prophecies and hidden threats. ` +
-    `She offers you a choice — a dangerous quest that could unlock your true power or a safer path to gather allies.`,
-  choices: [
-    { text: "Accept the dangerous quest", next: "dangerous_quest" },
-    { text: "Gather allies first", next: "gather_allies" }
-  ]
-},
+      after_wild_ride: {
+        text: () =>
+          `Sweat slick, breath ragged, and bodies tangled... “You better believe that.”`,
+        choices: [
+          { text: "Smile and brace for more", next: "start" }
+        ]
+      },
 
-blacksmith_scene: {
-  text: () =>
-    `The blacksmith wipes his hands and leans in, whispering about strange weapons and rumors of dark forces. ` +
-    `He offers to craft something unique for you — but it requires rare materials from the forest or the village outskirts.`,
-  choices: [
-    { text: "Search the forest for materials", next: "forest_path" },
-    { text: "Explore the village outskirts", next: "village_outskirts" }
-  ]
-},
+      plot_next: {
+        text: () =>
+          `Breathless and exhilarated, you pull back, minds swirling with possibilities.\n\n“This is only the beginning,” you whisper, already plotting the next chapter of this wild, dangerous game.`,
+        choices: [
+          { text: "Start your journey anew", next: "start" }
+        ]
+      }
+    };
 
-village_outskirts: {
-  text: () =>
-    `The outskirts are quiet, but you catch glimpses of shadowy figures moving between the trees. Danger lurks close, ` +
-    `but so does opportunity. You can investigate further or return to the village.`,
-  choices: [
-    { text: "Investigate further", next: "shadow_encounter" },
-    { text: "Return to the village", next: "village_path" }
-  ]
-},
-
-shadow_encounter: {
-  text: () =>
-    `As you edge deeper into the shadows, a rough hand clamps on your wrist. A rugged stranger grins, eyes dark with hunger. ` +
-    `“Well, well, what do we have here? A little firecracker looking for trouble?” His breath is warm against your neck.`,
-  choices: [
-    { text: "Push him away and run", next: "escape_shadow" },
-    { text: "Lean in and tease him", next: "tease_stranger" }
-  ]
-},
-
-escape_shadow: {
-  text: () =>
-    `You shove him hard, breaking free, heart pounding like a damn drum. You sprint through the trees, the stranger’s curses trailing behind you. ` +
-    `You know this isn’t over.`,
-  choices: [
-    { text: "Catch your breath and hide", next: "hide_hollow" },
-    { text: "Turn and face him",  next: "face_stranger" }
-  ]
-},
-
-tease_stranger: {
-  text: () =>
-    You smirk, stepping closer, voice low and dangerous. “You think you can handle this fire?” His eyes flash, and suddenly he’s on you, hands exploring like a goddamn man starving for a fight—and maybe more.,
-  choices: [
-    { text: "Give in to the heat", next: "stranger_heat" },
-    { text: "Pull back, stay in control", next: "stay_control" }
-  ]
-},
-
-stranger_heat: {
-  text: () =>
-    His lips crash against yours, hungry and demanding. You melt into the chaos, skin slick with sweat and desire. “You’re fucking wild,” he growls as his hands roam, fingers digging into places that make your breath hitch.,
-  choices: [
-    { text: "Ride the wave", next: "wild_ride" },
-    { text: "Slow it down, savor it", next: "slow_savor" }
-  ]
-},
-
-wild_ride: {
-  text: () =>
-    The world narrows to the heat between you, every touch sending jolts of pleasure that make you forget everything but the need to scream his name. It’s rough, raw, and perfect — a damn tempest you never want to end.,
-  choices: [
-    { text: "Hold on tight", next: "after_wild_ride" },
-    { text: "Let go completely", next: "after_wild_ride" }
-  ]
-},
-
-slow_savor: {
-  text: () =>
-    You drag the moment out, fingers tracing every curve, every gasp. The tension builds like a slow burn, teasing and torturing until you’re trembling on the edge, begging for release.,
-  choices: [
-    { text: "Let go now", next: "after_wild_ride" },
-    { text: "Keep teasing", next: "tease_more" }
-  ]
-},
-
-after_wild_ride: {
-  text: () =>
-    Breathless and tangled, you collapse against him, hearts racing. The stranger’s grin is wicked but satisfied. “You’re something else, firecracker.”,
-  choices: [
-    { text: "Ask his name", next: "ask_name" },
-    { text: "Slip away quietly", next: "slip_away" }
-  ]
-},
-
-tease_more: {
-  text: () =>
-    You pull back just enough to watch him squirm, lips biting, eyes dark with frustration and desire. “Not so fast, sweetheart,” you purr. “I’m not done with you yet.”,
-  choices: [
-    { text: "Keep teasing", next: "tease_more" },
-    { text: "Give in now", next: "after_wild_ride" }
-  ]
-},
-
-ask_name: {
-  text: () =>
-    He chuckles low and says, “Name’s Rafe. And you, gorgeous?”,
-  choices: [
-    { text: "Tell him your name", next: "introduce_kayla" },
-    { text: "Keep it mysterious", next: "mysterious_exit" }
-  ]
-},
-
-introduce_kayla: {
-  text: () =>
-    “Kayla,” you say, voice soft but fierce. Rafe’s grin widens, like he’s already making plans.,
-  choices: [
-    { text: "Stay with him", next: "stay_with_rafe" },
-    { text: "Head back to the village", next: "village_path" }
-  ]
-},
-
-mysterious_exit: {
-  text: () =>
-    You slip away into the fog, leaving Rafe wanting more. Mystery suits you — for now.,
-  choices: [
-    { text: "Vanish into the night", next: "hide_hollow" },
-    { text: "Return to the village", next: "village_path" }
-  ]
-},
-
-stay_with_rafe: {
-  text: () =>
-    Night deepens as Rafe pulls you close again, whispers rough promises in your ear. The fire between you burns hotter than ever — a dangerous, delicious addiction.,
-  choices: [
-    { text: "Dive deeper into desire", next: "rafe_desire" },
-    { text: "Pull away for clarity", next: "rafe_clarity" }
-  ]
-},
-
-rafe_desire: {
-  text: () =>
-    His hands claim your body with fierce need, every touch a promise of more. “You’re mine tonight, Kayla,” he growls, and you fucking love it.,
-  choices: [
-    { text: "Surrender completely", next: "both_climax" },
-    { text: "Push back, tease him", next: "tease_more" }
-  ]
-},
-
-rafe_clarity: {
-  text: () =>
-    You take a breath, pulling away just enough to remind yourself why you fight — to stay in control, to own your fire. Rafe watches, eyes gleaming, waiting for your next move.,
-  choices: [
-    { text: "Give in to him", next: "rafe_desire" },
-    { text: "Walk away for now", next: "village_path" }
-  ]
-},
-rafe_desire_explicit: {
-  text: () =>
-    Rafe’s eyes burn with a savage hunger as he drags you against him. His rough hands roam your body like they’re claiming it piece by piece, fingers tracing over every curve, every sensitive spot with deliberate cruelty.  +
-    His breath hitches as he nips at your neck, teeth grazing skin so lightly it’s torture. “You’re mine tonight, Kayla,” he growls low and dangerous. +
-    You can feel the hard press of him against your thigh, heat pooling and dripping like molten fire between your legs. +
-    His fingers find the wetness gathering there, slick and aching, and he slides two in without warning, slow, teasing, making you shudder. +
-    “God, you’re so fucking wet for me,” he pants, lips crashing back down to devour your mouth, tongue demanding, claiming. +
-    Your hands tangle in his hair, pulling him closer as his fingers curl inside you, hitting spots that make your breath catch and your body arch in pure, unfiltered need. +
-    He grinds into you hard, hips thrusting against your soaked core, the rough friction sending waves of pleasure so sharp they sting. +
-    “Say my name, Kayla. Tell me you want this. Tell me you want *me*.”,
-  choices: [
-    { text: "Cry out his name", next: "rafe_climax_explicit" },
-    { text: "Whisper your desire", next: "rafe_climax_explicit" }
-  ]
-},
-
-rafe_climax_explicit: {
-  text: () =>
-    You scream his name into the night as his fingers move faster, harder, driving you closer to the edge. His mouth finds your nipple, biting and sucking, sending shocks straight to your core.  +
-    The heat builds, tightening, spiraling until you’re a quivering mess, every nerve alive and trembling. +
-    With one final, brutal thrust, he sends you over, your body folding over his like you’re made of fire and flames. +
-    “Fuck, Kayla,” he growls, breath ragged and heavy, “you’re unbelievable.”,
-  choices: [
-    { text: "Collapse against him", next: "after_wild_ride" },
-    { text: "Pull him closer for more", next: "rafe_desire_explicit" }
-  ]
-},
-
-wild_threesome_intro: {
-  text: () =>
-    Just as the heat between you and Rafe reaches its peak, the air shifts — a shadow falls over you. The Guardian steps forward, eyes blazing with equal fire and possessiveness. +
-    “I’m not done with you, Kayla,” he growls, voice low and commanding. +
-    Rafe smirks but doesn’t back down. “Looks like you’re going to have to share her tonight.”,
-  choices: [
-    { text: "Let them both claim you", next: "wild_threesome" },
-    { text: "Choose one to dominate", next: "choose_one" }
-  ]
-},
-
-wild_threesome: {
-  text: () =>
-    The Guardian’s strong hands grab your waist, lifting you effortlessly as Rafe’s lips trail down your neck, biting, sucking, marking.  +
-    You’re pulled between two storms of desire — the Guardian’s fierce strength and Rafe’s wild, hungry passion. +
-    They work together, hands and mouths exploring your body with an intensity that leaves you breathless and begging for more. +
-    The Guardian’s fingers find places Rafe’s didn’t touch, drawing deep moans from your throat while Rafe’s tongue flicks over your clit, driving you wild. +
-    You’re lost in a whirlwind of sensation, skin slick with sweat, hearts pounding in a chaotic, perfect rhythm.,
-  choices: [
-    { text: "Surrender to their touch", next: "threesome_climax" },
-    { text: "Fight for control", next: "fight_for_control" }
-  ]
-},
-
-threesome_climax: {
-  text: () =>
-    Together, they push you over the edge, hands and mouths claiming every inch as you scream their names, body trembling in a perfect storm of lust and love. +
-    You collapse into their arms, utterly spent, but craving more of the fire only they can give.,
-  choices: [
-    { text: "Hold them close", next: "after_wild_ride" },
-    { text: "Rest and plan your next move", next: "plot_next" }
-  ]
-},
-
-fight_for_control: {
-  text: () =>
-    You push back, biting and clawing to remind them this fire is yours — fierce, untamable. +
-    The Guardian grins, eyes dark with challenge, while Rafe’s smirk turns dangerous. +
-    “We like a fight,” Rafe growls. “But don’t forget who holds the reins.”,
-  choices: [
-    { text: "Take control", next: "take_control" },
-    { text: "Let them lead for now", next: "threesome_climax" }
-  ]
-},
-
-take_control: {
-  text: () =>
-    You seize the moment, pushing them down, lips finding their sensitive spots, hands exploring with fierce intent. +
-    Your fire matches theirs, a blazing dance of power and passion where nothing is off limits. +
-    They respond in kind, surrendering to your wild command, the night theirs and yours in perfect balance.,
-  choices: [
-    { text: "Ride the fire together", next: "threesome_climax" }
-  ]
-},
-
-plot_next: {
-  text: () =>
-    Breathless and exhilarated, you pull back, minds swirling with possibilities. +
-    “This is only the beginning,” you whisper, already plotting the next chapter of this wild, dangerous game.,
-  choices: [
-
-
-document.addEventListener('DOMContentLoaded', () => {
-  const gameContainer = document.getElementById('game-container');
-  let currentSceneKey = "start";
-
-  const scenes = {
-    start: {
-      text: () => `You stand at the crossroads, heart racing, magic humming in your veins. Who will you turn to tonight?`,
-      choices: [
-        { text: "Find Rafe", next: "rafe_takeover" },
-        { text: "Go to the Guardian", next: "guardian_takeover" },
-        { text: "Start your journey anew", next: "start" }
-      ]
-    },
-
-    rafe_takeover: {
-      text: () =>
-        `Rafe doesn’t wait for permission. His hands slam down on your hips, gripping hard as he pulls you into a fierce, relentless rhythm. ` +
-        `Every thrust is deep and brutal, hitting places inside you that make your guts twist and your breath hitch. ` +
-        `His mouth is on your collarbone, biting hard enough to leave bruises, teeth scraping skin as his voice roughens. “You’re mine to fuck stupid tonight.” ` +
-        `Your nails dig into his back, desperate to hold onto something as waves of pleasure crash over you. ` +
-        `He growls against your skin, fingers tightening inside you, hitting that sweet spot that makes your body shatter. ` +
-        `“Fuck, Kayla, you’re so fucking wet and tight, just for me.”`,
-      choices: [
-        { text: "Cry out, begging for more", next: "rafe_rough_climax" },
-        { text: "Grab him and pull him deeper", next: "rafe_rough_climax" }
-      ]
-    },
-
-    rafe_rough_climax: {
-      text: () =>
-        `Your body trembles, muscles clenching around him as he pushes you over the edge with savage persistence. ` +
-        `Your scream breaks free, raw and desperate, echoing in the night as he spills inside you, groaning your name like a prayer. ` +
-        `You collapse against him, slick and spent, every nerve still burning with the aftermath of his rough love.`,
-      choices: [
-        { text: "Hold him close", next: "after_wild_ride" },
-        { text: "Whisper dirty promises", next: "rafe_takeover" }
-      ]
-    },
-
-    guardian_takeover: {
-      text: () =>
-        `The Guardian isn’t gentle. His hands grip your jaw, tilting your face up so his eyes lock with yours — fierce, possessive, and filled with raw desire. ` +
-        `“You’re mine,” he hisses, before crashing his lips down on yours with a hunger that steals your breath. ` +
-        `He devours you, tongue fighting for dominance as his hands roam your body, pinching, squeezing, marking you as his. ` +
-        `His hips slam into you with relentless power, each thrust deep and punishing, sending shockwaves through your core. ` +
-        `“Take it all,” he commands, voice rough and desperate. “Show me how much you want it.”`,
-      choices: [
-        { text: "Answer with a hungry moan", next: "guardian_rough_climax" },
-        { text: "Bite back, claiming him", next: "guardian_rough_climax" }
-      ]
-    },
-
-    guardian_rough_climax: {
-      text: () =>
-        `Your body ignites under his brutal touch, every nerve ending screaming as you fall apart in his arms. ` +
-        `You scream his name, voice raw and ragged, as he drives you to a brutal, shattering climax. ` +
-        `He grunts deep in your ear, voice thick with need. “That’s mine. Always.”`,
-      choices: [
-        { text: "Melt into him", next: "after_wild_ride" },
-        { text: "Challenge him with a wicked grin", next: "guardian_takeover" }
-      ]
-    },
-
-    after_wild_ride: {
-      text: () =>
-        `Sweat slick, breath ragged, and bodies tangled, you lie between the Guardian and Rafe — the perfect storm of fire and desire. ` +
-        `Their hands and lips still trace your skin, promising that this night was just the beginning. ` +
-        `“We’re not done with you,” the Guardian growls, voice low and dangerous. ` +
-        `Rafe chuckles darkly. “You better believe that.”`,
-      choices: [
-        { text: "Smile and brace for more", next: "start" }
-      ]
-    }
-  };
-
-  function clearChoices() {
-    const existingChoices = document.querySelectorAll('.choice-btn');
-    existingChoices.forEach(btn => btn.remove());
-  }
-
-  function renderScene(key) {
-    clearChoices();
-    currentSceneKey = key;
-    const scene = scenes[key];
-    if (!scene) {
-      gameContainer.textContent = "Scene not found.";
-      return;
+    function clearChoices() {
+      const existing = document.querySelectorAll('.choice-btn');
+      existing.forEach(btn => btn.remove());
     }
 
-    gameContainer.textContent = scene.text();
+    function renderScene(key) {
+      currentSceneKey = key;
+      clearChoices();
+      gameContainer.innerHTML = '';
 
-    if (scene.choices && scene.choices.length > 0) {
+      const scene = scenes[key];
+      if (!scene) {
+        gameContainer.textContent = "Scene not found.";
+        return;
+      }
+
+      const textEl = document.createElement('p');
+      textEl.innerText = typeof scene.text === 'function' ? scene.text() : scene.text;
+      gameContainer.appendChild(textEl);
+
       scene.choices.forEach(choice => {
         const btn = document.createElement('button');
-        btn.classList.add('choice-btn');
+        btn.className = 'choice-btn';
         btn.textContent = choice.text;
-        btn.addEventListener('click', () => {
-          renderScene(choice.next);
-        });
-        gameContainer.appendChild(document.createElement('br'));
+        btn.addEventListener('click', () => renderScene(choice.next));
         gameContainer.appendChild(btn);
       });
     }
-  }
 
-  renderScene(currentSceneKey);
-});
-</script>
+    renderScene(currentSceneKey);
+  </script>
 </body>
 </html>
